@@ -507,35 +507,64 @@ class _StopDetailScreenState extends ConsumerState<StopDetailScreen> {
 
   Widget _buildPartnerArrivedActions(RouteDetailState state, RouteStop stop) {
     final isDropoff = stop.stopType == 'partner_dropoff';
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: ElevatedButton(
-        onPressed: state.isLoading
-            ? null
-            : () => ref
-                .read(routeDetailProvider(widget.routeId).notifier)
-                .updateStopStatus(stop.id, 'completed'),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF10B981),
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+    final totalBags = state.bags.length;
+
+    return Column(
+      children: [
+        // Verify bags button (only for drop-off stops with bags)
+        if (isDropoff && totalBags > 0) ...[
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton.icon(
+              onPressed: () => context.push(
+                  '/route/${widget.routeId}/stop/${stop.id}/verify'),
+              icon: const Icon(Icons.qr_code_scanner),
+              label: Text('Verify Bags ($totalBags bags)'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF3B82F6),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+
+        // Confirm button
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: state.isLoading
+                ? null
+                : () => ref
+                    .read(routeDetailProvider(widget.routeId).notifier)
+                    .updateStopStatus(stop.id, 'completed'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF10B981),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: state.isLoading
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
+                  )
+                : Text(
+                    isDropoff ? 'Confirm Drop-off' : 'Confirm Pickup',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
           ),
         ),
-        child: state.isLoading
-            ? const SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Colors.white),
-              )
-            : Text(
-                isDropoff ? 'Confirm Drop-off' : 'Confirm Pickup',
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-      ),
+      ],
     );
   }
 

@@ -13,6 +13,7 @@ import 'screens/routes_screen.dart';
 import 'screens/shell_screen.dart';
 import 'screens/stop_detail_screen.dart';
 import 'screens/dropoff_screen.dart';
+import 'screens/verify_bags_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -105,6 +106,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           final routeId = state.pathParameters['routeId']!;
           final stopId = state.pathParameters['stopId']!;
           return QrScannerScreen(routeId: routeId, stopId: stopId);
+        },
+      ),
+      GoRoute(
+        path: '/route/:routeId/stop/:stopId/verify',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final routeId = state.pathParameters['routeId']!;
+          final stopId = state.pathParameters['stopId']!;
+          return VerifyBagsScreen(routeId: routeId, stopId: stopId);
         },
       ),
       GoRoute(
