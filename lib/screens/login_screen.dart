@@ -29,6 +29,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           _emailController.text.trim(),
           _passwordController.text,
         );
+
+    // Clear password from memory after login attempt
+    _passwordController.clear();
   }
 
   @override

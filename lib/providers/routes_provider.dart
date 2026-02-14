@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -219,7 +220,8 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
 
       state = RouteDetailState(route: route, stops: stops, bags: bags);
     } catch (e) {
-      state = RouteDetailState(error: 'Failed to load route: $e');
+      debugPrint('Route load error: $e');
+      state = const RouteDetailState(error: 'Failed to load route. Please try again.');
     }
   }
 
@@ -278,7 +280,8 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
 
       await _load();
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: 'Update failed: $e');
+      debugPrint('Route update error: $e');
+      state = state.copyWith(isLoading: false, error: 'Update failed. Please try again.');
     }
   }
 
@@ -298,7 +301,8 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
 
       await _load();
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: 'Start failed: $e');
+      debugPrint('Route start error: $e');
+      state = state.copyWith(isLoading: false, error: 'Start failed. Please try again.');
     }
   }
 
@@ -328,8 +332,9 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
 
       await _load();
     } catch (e) {
+      debugPrint('Stop update error: $e');
       state =
-          state.copyWith(isLoading: false, error: 'Stop update failed: $e');
+          state.copyWith(isLoading: false, error: 'Stop update failed. Please try again.');
     }
   }
 
@@ -340,7 +345,8 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
           .update({'photo_url': photoUrl}).eq('id', stopId);
       await _load();
     } catch (e) {
-      state = state.copyWith(error: 'Photo update failed: $e');
+      debugPrint('Photo update error: $e');
+      state = state.copyWith(error: 'Photo update failed. Please try again.');
     }
   }
 
@@ -381,7 +387,8 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
           e.toString().contains('already')) {
         state = state.copyWith(error: 'Bag already scanned');
       } else {
-        state = state.copyWith(error: 'Failed to create bag: $e');
+        debugPrint('Bag create error: $e');
+        state = state.copyWith(error: 'Failed to create bag. Please try again.');
       }
       return null;
     }
@@ -418,7 +425,8 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
       state = state.copyWith(bags: updatedBags);
       return bag;
     } catch (e) {
-      state = state.copyWith(error: 'Failed to scan bag: $e');
+      debugPrint('Bag pickup scan error: $e');
+      state = state.copyWith(error: 'Failed to scan bag. Please try again.');
       return null;
     }
   }
@@ -452,7 +460,8 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
       state = state.copyWith(bags: updatedBags);
       return bag;
     } catch (e) {
-      state = state.copyWith(error: 'Failed to deliver bag: $e');
+      debugPrint('Bag deliver error: $e');
+      state = state.copyWith(error: 'Failed to deliver bag. Please try again.');
       return null;
     }
   }
@@ -476,8 +485,9 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
 
       await _load();
     } catch (e) {
+      debugPrint('Route completion error: $e');
       state = state.copyWith(
-          isLoading: false, error: 'Route completion failed: $e');
+          isLoading: false, error: 'Route completion failed. Please try again.');
     }
   }
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/supabase.dart';
@@ -84,7 +85,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       state = AuthState(user: supabase.auth.currentUser, profile: profile);
     } catch (e) {
-      state = AuthState(error: 'Failed to load profile: $e');
+      debugPrint('Profile fetch error: $e');
+      state = const AuthState(error: 'Failed to load profile. Please try again.');
     }
   }
 
@@ -98,7 +100,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 
       if (response.user == null) {
-        state = AuthState(error: 'Login failed. Please try again.');
+        state = const AuthState(error: 'Login failed. Please try again.');
         return;
       }
 
@@ -107,7 +109,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } on AuthException catch (e) {
       state = AuthState(error: e.message);
     } catch (e) {
-      state = AuthState(error: 'An unexpected error occurred: $e');
+      debugPrint('Login error: $e');
+      state = const AuthState(error: 'An unexpected error occurred. Please try again.');
     }
   }
 

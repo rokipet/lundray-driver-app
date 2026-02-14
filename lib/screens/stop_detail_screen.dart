@@ -169,7 +169,7 @@ class _StopDetailScreenState extends ConsumerState<StopDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to upload photo: $e'),
+            content: const Text('Failed to upload photo. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );

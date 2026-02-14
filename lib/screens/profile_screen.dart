@@ -63,7 +63,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update availability: $e'),
+            content: const Text('Failed to update availability. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -102,7 +102,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update profile: $e'),
+            content: const Text('Failed to update profile. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );
