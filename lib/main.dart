@@ -12,7 +12,9 @@ import 'screens/route_detail_screen.dart';
 import 'screens/routes_screen.dart';
 import 'screens/shell_screen.dart';
 import 'screens/stop_detail_screen.dart';
+import 'screens/delivery_scan_screen.dart';
 import 'screens/dropoff_screen.dart';
+import 'screens/pickup_scan_screen.dart';
 import 'screens/verify_bags_screen.dart';
 
 void main() async {
@@ -115,6 +117,24 @@ final routerProvider = Provider<GoRouter>((ref) {
           final routeId = state.pathParameters['routeId']!;
           final stopId = state.pathParameters['stopId']!;
           return VerifyBagsScreen(routeId: routeId, stopId: stopId);
+        },
+      ),
+      GoRoute(
+        path: '/route/:routeId/stop/:stopId/pickup-scan',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final routeId = state.pathParameters['routeId']!;
+          final stopId = state.pathParameters['stopId']!;
+          return PickupScanScreen(routeId: routeId, stopId: stopId);
+        },
+      ),
+      GoRoute(
+        path: '/route/:routeId/stop/:stopId/delivery-scan',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final routeId = state.pathParameters['routeId']!;
+          final stopId = state.pathParameters['stopId']!;
+          return DeliveryScanScreen(routeId: routeId, stopId: stopId);
         },
       ),
       GoRoute(

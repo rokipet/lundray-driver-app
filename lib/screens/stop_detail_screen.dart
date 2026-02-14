@@ -411,15 +411,20 @@ class _StopDetailScreenState extends ConsumerState<StopDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Scan bags
+        // Scan bags — pickup: tag new bags, delivery: verify existing bags
         SizedBox(
           width: double.infinity,
           height: 48,
           child: ElevatedButton.icon(
-            onPressed: () =>
-                context.push('/route/${widget.routeId}/stop/${stop.id}/scan'),
+            onPressed: () => stop.stopType == 'delivery'
+                ? context.push(
+                    '/route/${widget.routeId}/stop/${stop.id}/delivery-scan')
+                : context.push(
+                    '/route/${widget.routeId}/stop/${stop.id}/scan'),
             icon: const Icon(Icons.qr_code_scanner),
-            label: Text('Scan Bags ($bagCount tagged)'),
+            label: Text(stop.stopType == 'delivery'
+                ? 'Verify Bags'
+                : 'Scan Bags ($bagCount tagged)'),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF3B82F6),
               foregroundColor: Colors.white,
@@ -507,6 +512,7 @@ class _StopDetailScreenState extends ConsumerState<StopDetailScreen> {
 
   Widget _buildPartnerArrivedActions(RouteDetailState state, RouteStop stop) {
     final isDropoff = stop.stopType == 'partner_dropoff';
+    final isPickup = stop.stopType == 'partner_pickup';
     final totalBags = state.bags.length;
 
     return Column(
@@ -521,6 +527,28 @@ class _StopDetailScreenState extends ConsumerState<StopDetailScreen> {
                   '/route/${widget.routeId}/stop/${stop.id}/verify'),
               icon: const Icon(Icons.qr_code_scanner),
               label: Text('Verify Bags ($totalBags bags)'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF3B82F6),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+
+        // Scan clean bags button (partner pickup — delivery route)
+        if (isPickup) ...[
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton.icon(
+              onPressed: () => context.push(
+                  '/route/${widget.routeId}/stop/${stop.id}/pickup-scan'),
+              icon: const Icon(Icons.qr_code_scanner),
+              label: const Text('Scan Clean Bags'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF3B82F6),
                 foregroundColor: Colors.white,

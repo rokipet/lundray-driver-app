@@ -387,6 +387,76 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
     }
   }
 
+  /// Scans a clean bag at partner pickup via /api/bags/scan with action "pickup_clean".
+  /// Returns the updated bag on success, null on failure.
+  Future<Bag?> pickupCleanBag(String bagCode) async {
+    try {
+      final headers = getAuthHeaders();
+      final response = await http.post(
+        Uri.parse('$siteUrl/api/bags/scan'),
+        headers: headers,
+        body: jsonEncode({
+          'bag_code': bagCode,
+          'action': 'pickup_clean',
+        }),
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        final respBody = jsonDecode(response.body);
+        state = state.copyWith(
+            error: respBody['error'] ?? 'Failed to scan bag');
+        return null;
+      }
+
+      final respBody = jsonDecode(response.body);
+      final bag = Bag.fromJson(respBody['bag'] ?? respBody);
+      // Update local bags list
+      final updatedBags = state.bags.map((b) => b.id == bag.id ? bag : b).toList();
+      if (!updatedBags.any((b) => b.id == bag.id)) {
+        updatedBags.insert(0, bag);
+      }
+      state = state.copyWith(bags: updatedBags);
+      return bag;
+    } catch (e) {
+      state = state.copyWith(error: 'Failed to scan bag: $e');
+      return null;
+    }
+  }
+
+  /// Marks a bag as delivered via /api/bags/scan with action "deliver".
+  Future<Bag?> deliverBag(String bagCode) async {
+    try {
+      final headers = getAuthHeaders();
+      final response = await http.post(
+        Uri.parse('$siteUrl/api/bags/scan'),
+        headers: headers,
+        body: jsonEncode({
+          'bag_code': bagCode,
+          'action': 'deliver',
+        }),
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        final respBody = jsonDecode(response.body);
+        state = state.copyWith(
+            error: respBody['error'] ?? 'Failed to deliver bag');
+        return null;
+      }
+
+      final respBody = jsonDecode(response.body);
+      final bag = Bag.fromJson(respBody['bag'] ?? respBody);
+      final updatedBags = state.bags.map((b) => b.id == bag.id ? bag : b).toList();
+      if (!updatedBags.any((b) => b.id == bag.id)) {
+        updatedBags.insert(0, bag);
+      }
+      state = state.copyWith(bags: updatedBags);
+      return bag;
+    } catch (e) {
+      state = state.copyWith(error: 'Failed to deliver bag: $e');
+      return null;
+    }
+  }
+
   /// Complete the route via the API (handles order propagation for pickup routes).
   Future<void> completeRoute() async {
     try {
