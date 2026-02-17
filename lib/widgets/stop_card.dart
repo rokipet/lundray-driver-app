@@ -7,12 +7,14 @@ class StopCard extends StatelessWidget {
   final RouteStop stop;
   final bool isCurrent;
   final VoidCallback? onTap;
+  final String? serviceCategory;
 
   const StopCard({
     super.key,
     required this.stop,
     this.isCurrent = false,
     this.onTap,
+    this.serviceCategory,
   });
 
   Future<void> _openNavigation() async {
@@ -93,12 +95,25 @@ class StopCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      _displayName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            _displayName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (serviceCategory != null &&
+                            stop.stopType != 'partner_pickup' &&
+                            stop.stopType != 'partner_dropoff') ...[
+                          const SizedBox(width: 6),
+                          CategoryBadge(category: serviceCategory),
+                        ],
+                      ],
                     ),
                     if (stop.address != null && stop.address!.isNotEmpty) ...[
                       const SizedBox(height: 2),

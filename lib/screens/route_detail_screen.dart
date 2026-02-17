@@ -495,9 +495,13 @@ class _RouteDetailScreenState extends ConsumerState<RouteDetailScreen> {
         ),
         ...state.stops.map((stop) {
           final isCurrent = currentStop?.id == stop.id;
+          final category = stop.orderId != null
+              ? state.orderCategories[stop.orderId!]
+              : null;
           return StopCard(
             stop: stop,
             isCurrent: isCurrent,
+            serviceCategory: category,
             onTap: () => context.push(
               '/route/${widget.routeId}/stop/${stop.id}',
             ),

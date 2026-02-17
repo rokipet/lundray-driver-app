@@ -116,6 +116,55 @@ class TypeBadge extends StatelessWidget {
   }
 }
 
+class CategoryBadge extends StatelessWidget {
+  final String? category;
+
+  const CategoryBadge({super.key, required this.category});
+
+  @override
+  Widget build(BuildContext context) {
+    final config = _getCategoryConfig(category);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: config.backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        config.label,
+        style: TextStyle(
+          color: config.textColor,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  static _BadgeConfig _getCategoryConfig(String? category) {
+    switch (category) {
+      case 'dry_cleaning':
+        return _BadgeConfig(
+          label: 'Dry Clean',
+          backgroundColor: const Color(0xFFF3E8FF),
+          textColor: const Color(0xFF7C3AED),
+        );
+      case 'bulky_items':
+        return _BadgeConfig(
+          label: 'Bulky',
+          backgroundColor: const Color(0xFFFFF7ED),
+          textColor: const Color(0xFFC2410C),
+        );
+      default:
+        return _BadgeConfig(
+          label: 'Wash',
+          backgroundColor: const Color(0xFFDBEAFE),
+          textColor: const Color(0xFF1D4ED8),
+        );
+    }
+  }
+}
+
 class _BadgeConfig {
   final String label;
   final Color backgroundColor;

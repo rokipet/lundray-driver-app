@@ -135,6 +135,9 @@ class _DropoffScreenState extends ConsumerState<DropoffScreen> {
                     ...bags.asMap().entries.map((entry) {
                       final idx = entry.key;
                       final bag = entry.value;
+                      final category = bag.orderId != null
+                          ? state.orderCategories[bag.orderId!]
+                          : null;
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Row(
@@ -150,12 +153,20 @@ class _DropoffScreenState extends ConsumerState<DropoffScreen> {
                               ),
                             ),
                             Expanded(
-                              child: Text(
-                                bag.bagCode ?? 'Unknown',
-                                style: const TextStyle(
-                                  fontFamily: 'monospace',
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    bag.bagCode ?? 'Unknown',
+                                    style: const TextStyle(
+                                      fontFamily: 'monospace',
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if (category != null) ...[
+                                    const SizedBox(width: 6),
+                                    CategoryBadge(category: category),
+                                  ],
+                                ],
                               ),
                             ),
                             if (bag.weight != null)

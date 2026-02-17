@@ -144,6 +144,7 @@ class RouteDetailState {
   final DriverRoute? route;
   final List<RouteStop> stops;
   final List<Bag> bags;
+  final Map<String, String> orderCategories; // orderId → serviceCategory
   final bool isLoading;
   final String? error;
 
@@ -151,6 +152,7 @@ class RouteDetailState {
     this.route,
     this.stops = const [],
     this.bags = const [],
+    this.orderCategories = const {},
     this.isLoading = false,
     this.error,
   });
@@ -159,6 +161,7 @@ class RouteDetailState {
     DriverRoute? route,
     List<RouteStop>? stops,
     List<Bag>? bags,
+    Map<String, String>? orderCategories,
     bool? isLoading,
     String? error,
     bool clearError = false,
@@ -167,6 +170,7 @@ class RouteDetailState {
       route: route ?? this.route,
       stops: stops ?? this.stops,
       bags: bags ?? this.bags,
+      orderCategories: orderCategories ?? this.orderCategories,
       isLoading: isLoading ?? this.isLoading,
       error: clearError ? null : (error ?? this.error),
     );
@@ -218,7 +222,36 @@ class RouteDetailNotifier extends StateNotifier<RouteDetailState> {
       final bags =
           (bagsResponse as List).map((j) => Bag.fromJson(j)).toList();
 
-      state = RouteDetailState(route: route, stops: stops, bags: bags);
+      // Fetch order categories for customer stops
+      final orderIds = stops
+          .where((s) => s.orderId != null)
+          .map((s) => s.orderId!)
+          .toSet()
+          .toList();
+
+      Map<String, String> categories = {};
+      if (orderIds.isNotEmpty) {
+        try {
+          final ordersResponse = await supabase
+              .from('orders')
+              .select('id, service_category')
+              .inFilter('id', orderIds);
+          for (final o in (ordersResponse as List)) {
+            if (o['service_category'] != null) {
+              categories[o['id'] as String] = o['service_category'] as String;
+            }
+          }
+        } catch (_) {
+          // Non-critical, continue without categories
+        }
+      }
+
+      state = RouteDetailState(
+        route: route,
+        stops: stops,
+        bags: bags,
+        orderCategories: categories,
+      );
     } catch (e) {
       debugPrint('Route load error: $e');
       state = const RouteDetailState(error: 'Failed to load route. Please try again.');
